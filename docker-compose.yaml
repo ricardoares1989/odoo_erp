@@ -1,0 +1,21 @@
+version: "3.8"
+
+volumes:
+    db_odoo: {}
+
+services:
+    odoo:
+        build:
+            context: .
+        image: odoo_prueba
+        ports: 8080:8080
+        volumes:
+            - .:/
+    db:
+        image: postgres
+        volumes:
+            - db_odoo:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_USER: ${POSTGRES_USER:-odoo_user}
+            - POSTGRES_DB: ${POSTGRES_DB:-odoo}
+            - POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin1234}
