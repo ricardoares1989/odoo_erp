@@ -2,20 +2,28 @@ version: "3.8"
 
 volumes:
     db_odoo: {}
+    odoo-web-data: {}
 
 services:
     odoo:
-        build:
-            context: .
-        image: odoo_prueba
-        ports: 8080:8080
+        image: odoo
+        ports:
+            - 8069:8069
         volumes:
-            - .:/
+            - odoo-web-data:/var/lib/odoo
+            - ./odoo_app/config:/etc/odoo
+            - ./odoo_app/addons:/mnt/extra-addons
+        depends_on:
+            - db
+        environment:
+            - USER=${POSTGRES_USER:-odoo}
+            - PASSWORD=${POSTGRES_PASSWORD:-admin1234}
+            - HOST=db
     db:
         image: postgres
         volumes:
             - db_odoo:/var/lib/postgresql/data
         environment:
-            - POSTGRES_USER: ${POSTGRES_USER:-odoo_user}
-            - POSTGRES_DB: ${POSTGRES_DB:-odoo}
-            - POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin1234}
+            - POSTGRES_USER=${POSTGRES_USER:-odoo}
+            - POSTGRES_DB=${POSTGRES_DB:-postgres}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-admin1234}
